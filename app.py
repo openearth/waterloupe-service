@@ -29,7 +29,7 @@ def hello_world():
     return "Waterloupe api"
 
 
-@application.route("/api/bar_chart", methods=["GET", "POST"])
+@application.route("/api/stacked_column_chart", methods=["GET", "POST"])
 def bar_chart():
     """** WIP ** The bar_chart is a stacked bar chart. Reads from database series data and period names
     Inputs: scenario, area, solution
