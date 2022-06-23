@@ -16,14 +16,6 @@ conf_file = service_path / "configuration.txt"
 engine, connection = establish_db_connection()
 
 
-metadata = sqlalchemy.MetaData()
-metadata.reflect(views=True, bind=engine, schema="wl")
-
-period = metadata.tables["wl.period"]
-scenario_data = metadata.tables["wl.scenariodata"]
-scenario_data_agg = metadata.tables["wl.scenariodata_agg"]
-
-
 @application.route("/")
 def hello_world():
     return "Waterloupe api"
@@ -45,9 +37,7 @@ def bar_chart():
     query = select(func.wl.scenariodata_agg_json(area, scenario, solution))
     result = connection.execute(query).fetchone()
 
-    response = dict(result.items())[
-        "scenariodata_agg_json_1"
-    ]  # TODO: see what the scenario_data_agg_json_1 stands for in the response
+    response = dict(result.items())["scenariodata_agg_json_1"]
 
     return jsonify(response)
 
@@ -57,4 +47,17 @@ def line_chart():
     """** WIP ** The line_chart is a timeseries chart. Reads from database series data and period names
     Inputs: scenario, area, solution
     """
-    return jsonify({"line_chart": "line_chart"})
+
+    inputs = request.json
+
+    scenario = inputs["scenario"]
+    area = inputs["area"]
+    solution = inputs["solution"]
+
+    # query series for bar chart
+    query = select(func.wl.scenariodata_per_date_json(area, scenario, solution))
+    result = connection.execute(query).fetchone()
+
+    response = dict(result.items())["scenariodata_per_date_json_1"]
+
+    return jsonify(response)
