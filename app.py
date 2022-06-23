@@ -5,6 +5,7 @@ import sqlalchemy
 from sqlalchemy import column, func, select
 from flask_cors import CORS  # only for development
 from utils import establish_db_connection
+import json
 
 application = Flask(__name__)
 
@@ -45,14 +46,12 @@ def bar_chart():
     query = select(func.wl.scenariodata_agg_json(area, scenario, solution))
     result = connection.execute(query).fetchone()
 
+    # Get base options for the bar chart
+    with open('echarts-templates/bar-chart.json', 'r') as f:
+        base_options = json.load(f)
+
     response = dict(result.items())[
         "scenariodata_agg_json_1"
     ]  # TODO: see what the scenario_data_agg_json_1 stands for in the response
 
-    # query period names
-    query = select([period.columns.period_name])
-    result = connection.execute(query).fetchall()
-    labels = [r for r, in result]
-
-    response["labels"] = labels
-    return jsonify(response)
+    return jsonify({**base_options,**response})
