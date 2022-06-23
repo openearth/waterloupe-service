@@ -49,10 +49,12 @@ def bar_chart():
         "scenariodata_agg_json_1"
     ]  # TODO: see what the scenario_data_agg_json_1 stands for in the response
 
-    # query period names
-    query = select([period.columns.period_name])
-    result = connection.execute(query).fetchall()
-    labels = [r for r, in result]
-
-    response["labels"] = labels
     return jsonify(response)
+
+
+@application.route("/api/line_chart", methods=["GET", "POST"])
+def line_chart():
+    """** WIP ** The line_chart is a timeseries chart. Reads from database series data and period names
+    Inputs: scenario, area, solution
+    """
+    return jsonify({"line_chart": "line_chart"})
