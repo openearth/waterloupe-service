@@ -31,22 +31,22 @@ def bar_chart():
     inputs = request.json
 
     scenario = inputs["scenario"]
-    area = inputs["area"]
+    area = inputs["area"].replace(" ", "")
+    formatted_area = area[0].lower() + area[1:]
     solution = inputs["solution"]
 
     # query series for bar chart
-    query = select(func.wl.scenariodata_agg_json(area, scenario, solution))
+    query = select(func.wl.scenariodata_agg_json(formatted_area, scenario, solution))
     result = connection.execute(query).fetchone()
 
     # Get base options for the bar chart
-    with open('echarts-templates/bar-chart.json', 'r') as f:
+    with open("echarts-templates/bar-chart.json", "r") as f:
         base_options = json.load(f)
 
-    response = dict(result.items())[
-        "scenariodata_agg_json_1"
-    ]  # TODO: see what the scenario_data_agg_json_1 stands for in the response
+    response = dict(result.items())["scenariodata_agg_json_1"]
 
-    return jsonify({**base_options,**response})
+    return jsonify({**base_options, **response})
+
 
 @application.route("/api/line_chart", methods=["GET", "POST"])
 def line_chart():
@@ -57,17 +57,21 @@ def line_chart():
     inputs = request.json
 
     scenario = inputs["scenario"]
-    area = inputs["area"]
+    area = inputs["area"].replace(" ", "")
+    formatted_area = area[0].lower() + area[1:]
     solution = inputs["solution"]
 
     # query series for line chart
-    query = select(func.wl.scenariodata_per_date_json(area, scenario, solution))
+    query = select(
+        func.wl.scenariodata_per_date_total_json(formatted_area, scenario, solution)
+    )
     result = connection.execute(query).fetchone()
 
     # Get base options for the line chart
-    with open('echarts-templates/line-chart.json', 'r') as f:
+    with open("echarts-templates/line-chart.json", "r") as f:
         base_options = json.load(f)
 
-    response = dict(result.items())["scenariodata_per_date_json_1"]
+    response = dict(result.items())["scenariodata_per_date_total_json_1"]
 
-    return jsonify({**base_options,**response})
+    return jsonify({**base_options, **response})
+    # return jsonify(response)

@@ -7,11 +7,11 @@
   },
   "legend": {
     "orient": "horizontal",
-    "top": "-5%"
+    "top": "0%"
   },
   "grid": {
-    "left": "2%",
-    "bottom": "5%",
+    "left": "3%",
+    "bottom": "3%",
     "containLabel": true
   },
   "yAxis": [
