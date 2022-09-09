@@ -31,12 +31,11 @@ def bar_chart():
     inputs = request.json
 
     scenario = inputs["scenario"]
-    area = inputs["area"].replace(" ", "")
-    formatted_area = area[0].lower() + area[1:]
+    area_id = inputs["area"]
     solution = inputs["solution"]
-
     # query series for bar chart
-    query = select(func.wl.scenariodata_agg_json(formatted_area, scenario, solution))
+    query = select(func.wl.scenariodata_agg_json(area_id, scenario, solution))
+
     result = connection.execute(query).fetchone()
 
     # Get base options for the bar chart
@@ -57,13 +56,12 @@ def line_chart():
     inputs = request.json
 
     scenario = inputs["scenario"]
-    area = inputs["area"].replace(" ", "")
-    formatted_area = area[0].lower() + area[1:]
+    area_id = inputs["area"]
     solution = inputs["solution"]
 
     # query series for line chart
     query = select(
-        func.wl.scenariodata_per_date_total_json(formatted_area, scenario, solution)
+        func.wl.scenariodata_per_date_total_json(area_id, scenario, solution)
     )
     result = connection.execute(query).fetchone()
 
