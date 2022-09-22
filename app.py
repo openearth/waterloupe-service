@@ -3,13 +3,14 @@ from flask import Flask, jsonify, request
 from pathlib import Path
 import sqlalchemy
 from sqlalchemy import column, func, select
-from flask_cors import CORS  # only for development
+
+# from flask_cors import CORS  # only for development
 from utils import establish_db_connection
 import json
 
 application = Flask(__name__)
 
-CORS(application)  # only for development
+# CORS(application)  # only for development
 service_path = Path(__file__).resolve().parent
 conf_file = service_path / "configuration.txt"
 
