@@ -77,4 +77,29 @@ def line_chart():
 
 
     return jsonify({**base_options, **response})
+
+@application.route("/api/risk_maps", methods=["GET", "POST"])
+def risk_maps():
     
+    """The risk_maps returns a geojson with the risk map.
+    Inputs: case, scenario, period_id, solution, users
+    """
+
+    inputs = request.json
+
+    scenario = inputs["scenario"]
+    period_id = inputs["period_id"]
+    solution = inputs["solution"]
+    db_schema = inputs["case"]
+    users = inputs["users"]
+
+    query = f"select * from {db_schema}.risk_data_geojson({period_id}, '{scenario}','{solution}', '{users}');"
+    engine, connection = establish_db_connection() 
+
+    with connection as con:
+        response = con.execute(query).fetchone()[0]
+    
+
+
+    return jsonify(response)
+
