@@ -2,7 +2,8 @@
 from flask import Flask, jsonify, request
 from pathlib import Path
 import sqlalchemy
-from sqlalchemy import column, func, select
+from sqlalchemy import column, func, select, event
+
 
 # from flask_cors import CORS  # only for development
 from utils import establish_db_connection
@@ -15,9 +16,6 @@ service_path = Path(__file__).resolve().parent
 conf_file = service_path / "configuration.txt"
 
 
-engine, connection = establish_db_connection()
-
-
 @application.route("/")
 def hello_world():
     return "Waterloupe api"
@@ -25,8 +23,8 @@ def hello_world():
 
 @application.route("/api/bar_chart", methods=["GET", "POST"])
 def bar_chart():
-    """** WIP ** The bar_chart is a stacked bar chart. Reads from database series data and period names
-    Inputs: scenario, area, solution
+    """The bar_chart is a stacked bar chart. Reads from database series data and period names
+    Inputs: case, scenario, area, solution
     """
 
     inputs = request.json
@@ -34,24 +32,29 @@ def bar_chart():
     scenario = inputs["scenario"]
     area_id = inputs["area"]
     solution = inputs["solution"]
-    # query series for bar chart
-    query = select(func.wl.scenariodata_agg_json(area_id, scenario, solution))
+    db_schema = inputs["case"] 
+    
 
-    result = connection.execute(query).fetchone()
+    query = f"select * from {db_schema}.scenariodata_agg_json({area_id}, '{scenario}','{solution}');"
+    
+    engine, connection = establish_db_connection() 
+
+    with connection as con:
+        response = con.execute(query).fetchone()[0]
+
 
     # Get base options for the bar chart
     with open("echarts-templates/bar-chart.json", "r") as f:
         base_options = json.load(f)
-
-    response = dict(result.items())["scenariodata_agg_json_1"]
 
     return jsonify({**base_options, **response})
 
 
 @application.route("/api/line_chart", methods=["GET", "POST"])
 def line_chart():
-    """** WIP ** The line_chart is a timeseries chart. Reads from database series data and period names
-    Inputs: scenario, area, solution
+
+    """The line_chart is a timeseries chart. Reads from database series data and period names
+    Inputs: case, scenario, area, solution
     """
 
     inputs = request.json
@@ -59,18 +62,19 @@ def line_chart():
     scenario = inputs["scenario"]
     area_id = inputs["area"]
     solution = inputs["solution"]
+    db_schema = inputs["case"]
 
-    # query series for line chart
-    query = select(
-        func.wl.scenariodata_per_date_total_json(area_id, scenario, solution)
-    )
-    result = connection.execute(query).fetchone()
+
+    query = f"select * from {db_schema}.scenariodata_per_date_total_json({area_id}, '{scenario}','{solution}');"
+    engine, connection = establish_db_connection() 
+
+    with connection as con:
+        response = con.execute(query).fetchone()[0]
 
     # Get base options for the line chart
     with open("echarts-templates/line-chart.json", "r") as f:
         base_options = json.load(f)
 
-    response = dict(result.items())["scenariodata_per_date_total_json_1"]
 
     return jsonify({**base_options, **response})
-    # return jsonify(response)
+    
