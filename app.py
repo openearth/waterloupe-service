@@ -95,7 +95,7 @@ def maps():
     users = inputs["users"]
     map_type = inputs["map_type"]
     
-    query = f"select * from {db_schema}.all_data_geojson({map_type}, {period_id}, '{scenario}','{solution}', '{users}');" 
+    query = f"select * from {db_schema}.all_data_geojson('{map_type}', {period_id}, '{scenario}','{solution}', '{users}');" 
     engine, connection = establish_db_connection() 
 
     with connection as con:
