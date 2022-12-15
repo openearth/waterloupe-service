@@ -134,7 +134,10 @@ def users_periods(case):
     with connection as con: 
         users_response = con.execute(query_users).fetchall()
         periods_response = con.execute(query_periods).fetchall()
+        
     users = [user[0] for user in users_response]
+    users.remove('none') #TODO: find a solution in the database side
+    
     periods= [period[0] for period in periods_response]
     
     response = {
