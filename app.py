@@ -129,16 +129,23 @@ def users_periods(case):
     
     engine, connection = establish_db_connection() 
     query_users = f"select * from {case}.list_users;"
-    query_periods =  f"select period_name from {case}.period;"
+    query_periods =  f"select period_name, period_id from {case}.period;"
 
     with connection as con: 
         users_response = con.execute(query_users).fetchall()
         periods_response = con.execute(query_periods).fetchall()
-        
+
     users = [user[0] for user in users_response]
     users.remove('none') #TODO: find a solution in the database side
+    periods = []
+    for period in periods_response:
+        period_info = {
+            "period_name": period[0],
+            "period_id": period[1]
+        }
+        periods.append(period_info)
+
     
-    periods= [period[0] for period in periods_response]
     
     response = {
         "users": users,
