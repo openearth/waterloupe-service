@@ -171,3 +171,26 @@ def scenarios(case):
     return jsonify(parameters)
 
 
+@application.route("/api/areas/<case>", methods=["GET", "POST"])
+def areas(case):
+    
+    engine, connection = establish_db_connection() 
+    
+    query =  f"select name, area_id from {case}.area;"
+    
+    with connection as con: 
+        query_response = con.execute(query).fetchall()
+        
+
+    areas = []
+    for area in query_response:
+        area_info = {
+            "area_name": area[0],
+            "area_id": area[1]
+        }
+        areas.append(area_info)
+    
+    response = {
+        "areas": areas
+    }
+    return jsonify(response)
