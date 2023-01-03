@@ -32,12 +32,12 @@ def bar_chart():
     scenario = inputs["scenario"]
     area_id = inputs["area"]
     solution = inputs["solution"]
-    db_schema = inputs["case"] 
-    
+    db_schema = inputs["case"]
+
 
     query = f"select * from {db_schema}.scenariodata_agg_json({area_id}, '{scenario}','{solution}');"
-    
-    engine, connection = establish_db_connection() 
+
+    engine, connection = establish_db_connection()
 
     with connection as con:
         response = con.execute(query).fetchone()[0]
@@ -67,7 +67,7 @@ def line_chart():
 
 
     query = f"select * from {db_schema}.scenariodata_per_date_total_json({area_id}, '{scenario}','{solution}');"
-    engine, connection = establish_db_connection() 
+    engine, connection = establish_db_connection()
 
     with connection as con:
         response = con.execute(query).fetchone()[0]
@@ -81,7 +81,7 @@ def line_chart():
 
 @application.route("/api/maps", methods=["GET", "POST"])
 def maps():
-    
+
     """The risk_maps returns a geojson with the risk map.
     Inputs: case, scenario, period_id, solution, users
     """
@@ -94,25 +94,25 @@ def maps():
     db_schema = inputs["case"]
     users = inputs["users"]
     map_type = inputs["map_type"]
-    
-    query = f"select * from {db_schema}.all_data_geojson('{map_type}', {period_id}, '{scenario}','{solution}', '{users}');" 
-    engine, connection = establish_db_connection() 
+
+    query = f"select * from {db_schema}.all_data_geojson('{map_type}', {period_id}, '{scenario}','{solution}', '{users}');"
+    engine, connection = establish_db_connection()
 
     with connection as con:
         response = con.execute(query).fetchone()[0]
-    
+
     return jsonify(response)
 
 
 
 @application.route("/api/solutions_scenarios/<case>", methods=["GET", "POST"])
 def solutions_scenarios(case):
-    
-    engine, connection = establish_db_connection() 
+
+    engine, connection = establish_db_connection()
     query_scenarios = f"select * from {case}.list_scenario;"
     query_solutions =  f"select * from {case}.list_solution;"
 
-    with connection as con: 
+    with connection as con:
         scenarios_response = con.execute(query_scenarios).fetchall()
         solutions_response = con.execute(query_solutions).fetchall()
     scenarios = [scenario[0] for scenario in scenarios_response]
@@ -121,22 +121,23 @@ def solutions_scenarios(case):
         "solutions": solutions,
         "scenarios": scenarios
     }
-    
+
     return jsonify(response)
 
 @application.route("/api/users_periods/<case>", methods=["GET", "POST"])
 def users_periods(case):
-    
-    engine, connection = establish_db_connection() 
+
+    engine, connection = establish_db_connection()
     query_users = f"select * from {case}.list_users;"
     query_periods =  f"select period_name, period_id from {case}.period;"
 
-    with connection as con: 
+    with connection as con:
         users_response = con.execute(query_users).fetchall()
         periods_response = con.execute(query_periods).fetchall()
 
     users = [user[0] for user in users_response]
-    users.remove('none') #TODO: find a solution in the database side
+    if ('none' in users): #TODO: HORRIBLE, sometimes none, sometimes None.
+      users.remove('none') #TODO: find a solution in the database side
     periods = []
     for period in periods_response:
         period_info = {
@@ -145,25 +146,25 @@ def users_periods(case):
         }
         periods.append(period_info)
 
-    
-    
+
+
     response = {
         "users": users,
         "periods": periods
     }
-    
+
     return jsonify(response)
-    
+
 
 @application.route("/api/parameters/<case>", methods=["GET", "POST"])
 def scenarios(case):
 
-    engine, connection = establish_db_connection() 
+    engine, connection = establish_db_connection()
     query = f"select * from {case}.list_parameter;"
 
-    with connection as con: 
+    with connection as con:
         query_response = con.execute(query).fetchall()
-    
+
     parameters = [parameter[0] for parameter in query_response]
     response = {
         "parameters" : parameters
@@ -173,14 +174,14 @@ def scenarios(case):
 
 @application.route("/api/areas/<case>", methods=["GET", "POST"])
 def areas(case):
-    
-    engine, connection = establish_db_connection() 
-    
+
+    engine, connection = establish_db_connection()
+
     query =  f"select name, area_id from {case}.area;"
-    
-    with connection as con: 
+
+    with connection as con:
         query_response = con.execute(query).fetchall()
-        
+
 
     areas = []
     for area in query_response:
@@ -189,7 +190,7 @@ def areas(case):
             "area_id": area[1]
         }
         areas.append(area_info)
-    
+
     response = {
         "areas": areas
     }
