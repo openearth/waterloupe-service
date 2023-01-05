@@ -77,7 +77,7 @@ def line_chart():
         base_options = json.load(f)
 
     print(response)
-    return jsonify({**response, **base_options})
+    return jsonify(dict(base_options, **response))
 
 @application.route("/api/maps", methods=["GET", "POST"])
 def maps():
