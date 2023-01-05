@@ -14,6 +14,21 @@
     "bottom": "3%",
     "containLabel": true
   },
+  "xAxis": {
+    "type": "category",
+    "nameLocation": "middle",
+    "nameGap": 25,
+    "axisLabel": {
+      "interval": 59,
+      "showMaxLabel": false
+    },
+    "axisTick": {
+      "alignWithLabel": true
+    },
+    "axisLine": {
+      "symbol": false
+    }
+  },
   "yAxis": {
     "type": "value"
   }
