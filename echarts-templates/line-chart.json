@@ -30,6 +30,9 @@
     }
   },
   "yAxis": {
-    "type": "value"
+    "type": "value",
+    "axisLine": {
+      "onZero": false
+    }
   }
 }
