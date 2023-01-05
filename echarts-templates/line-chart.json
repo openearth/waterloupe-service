@@ -13,5 +13,8 @@
     "left": "3%",
     "bottom": "3%",
     "containLabel": true
+  },
+  "yAxis": {
+    "type": "value"
   }
 }

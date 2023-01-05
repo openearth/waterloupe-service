@@ -14,5 +14,8 @@
     "bottom": "10%",
     "top": "20%",
     "containLabel": true
+  },
+  "yAxis": {
+    "type": "value"
   }
 }
