@@ -9,7 +9,11 @@ from sqlalchemy import column, func, select, event
 from utils import establish_db_connection
 import json
 
+import logging
+
 application = Flask(__name__)
+
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s : %(message)s')
 
 # CORS(application)  # only for development
 service_path = Path(__file__).resolve().parent
@@ -47,12 +51,10 @@ def bar_chart():
     with open("echarts-templates/bar-chart.json", "r") as f:
         base_options = json.load(f)
 
-    for key in response:
-      base_options[key] = {**response[key], **base_options[key]}
+    for key in base_options:
+        response[key] = {**response.get(key, {}), **base_options[key]}
 
-    print(response)
-    return jsonify(base_options)
-
+    return jsonify(response)
 
 
 @application.route("/api/line_chart", methods=["GET", "POST"])
@@ -79,12 +81,10 @@ def line_chart():
     # Get base options for the line chart
     with open("echarts-templates/line-chart.json", "r") as f:
         base_options = json.load(f)
+    for key in base_options:
+        response[key] = {**response.get(key, {}), **base_options[key]}
 
-    for key in response:
-      base_options[key] = {**response[key], **base_options[key]}
-
-    print(response)
-    return jsonify(base_options)
+    return jsonify(response)
 
 @application.route("/api/maps", methods=["GET", "POST"])
 def maps():
