@@ -15,6 +15,7 @@ dependencies:
   - jinja2=3.0.3
   - libpq=12.9
   - markupsafe=2.1.1
+  - mergedeep
   - openssl=1.1.1o
   - pip=21.2.4
   - psycopg2=2.8.6

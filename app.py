@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from pathlib import Path
 import sqlalchemy
 from sqlalchemy import column, func, select, event
-
+from mergedeep import merge
 
 # from flask_cors import CORS  # only for development
 from utils import establish_db_connection
@@ -47,7 +47,7 @@ def bar_chart():
     with open("echarts-templates/bar-chart.json", "r") as f:
         base_options = json.load(f)
 
-    return jsonify({**base_options, **response})
+    return jsonify(merge(base_options, response))
 
 
 
@@ -77,7 +77,7 @@ def line_chart():
         base_options = json.load(f)
 
     print(response)
-    return jsonify(dict(base_options, **response))
+    return jsonify(merge(base_options, response))
 
 @application.route("/api/maps", methods=["GET", "POST"])
 def maps():
