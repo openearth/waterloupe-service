@@ -76,8 +76,8 @@ def line_chart():
     with open("echarts-templates/line-chart.json", "r") as f:
         base_options = json.load(f)
 
-
-    return jsonify({**base_options, **response})
+    print(response)
+    return jsonify({**response, **base_options})
 
 @application.route("/api/maps", methods=["GET", "POST"])
 def maps():
